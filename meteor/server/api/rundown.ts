@@ -45,6 +45,7 @@ import { PeripheralDevice } from '../../lib/collections/PeripheralDevices'
 import { PartInstances } from '../../lib/collections/PartInstances'
 import { ReloadRundownPlaylistResponse, ReloadRundownResponse } from '../../lib/api/userActions'
 import { findMissingConfigs } from './blueprints/config'
+import { AdLibActions } from '../../lib/collections/AdLibActions';
 
 export function selectShowStyleVariant (studio: Studio, ingestRundown: IngestRundown): { variant: ShowStyleVariant, base: ShowStyleBase } | null {
 	if (!studio.supportedShowStyleBase.length) {
@@ -271,6 +272,10 @@ export function afterRemoveParts (rundownId: RundownId, removedParts: DBPart[]) 
 		afterRemoveAll (pieces) {
 			afterRemovePieces(rundownId, pieces)
 		}
+	})
+	AdLibActions.remove({
+		rundownId: rundownId,
+		partId: { $in: _.map(removedParts, p => p._id) }
 	})
 	_.each(removedParts, part => {
 		// TODO - batch?
